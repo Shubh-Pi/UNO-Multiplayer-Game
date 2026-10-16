@@ -141,7 +141,7 @@ function renderHome() {
   const inviteCode = escapeHtml(new URLSearchParams(location.search).get("room") || "");
   return `<section class="screen home-screen">
     <div class="hero-copy">
-      <p class="eyebrow">COLOR CLUB · PLAY TOGETHER</p>
+      <p class="eyebrow">UNO MULTIPLAYER · PLAY TOGETHER</p>
       <h1>Bring your best<br><span class="accent">hand.</span></h1>
       <p>Quick card rounds, clever challenges, and a table full of friends. Grab a seat and let the good moves begin.</p>
       <div class="card-fan" aria-label="Four colorful game cards">
@@ -265,7 +265,7 @@ function renderChallenge(challenge) {
   const asker = challenge.phase === "answer";
   const deadline = challenge.deadline || "";
   if (asker) {
-    return `<section class="challenge-card"><div class="challenge-meta"><span>${challenge.source === "llm" ? "AI-generated challenge" : "Challenge prompt"} · ${answerer ? "Your answer" : `${escapeHtml(playerName(state.players, challenge.player_id))} is answering`}</span><span><b data-deadline="${deadline}">--</b>s</span></div><h3>${answerer ? "Show us what you’ve got." : "Challenge time."}</h3><p class="challenge-prompt">${escapeHtml(challenge.prompt)}</p>${answerer ? `<div class="answer-line"><input class="input" id="challenge-answer" maxlength="240" placeholder="Type a quick answer…" autocomplete="off"><button class="btn btn-primary" data-action="submit-answer">Send answer</button></div><button class="btn btn-light compact mic-button" type="button" data-action="mic">🎙 &nbsp;Answer by voice</button><p class="mic-note">Microphone access is requested only when you tap voice. Your browser’s speech service handles voice; Color Club receives the transcript. Typing always works.</p>` : `<div class="wait-row">The group will vote after the answer.</div>`}</section>`;
+    return `<section class="challenge-card"><div class="challenge-meta"><span>${challenge.source === "llm" ? "AI-generated challenge" : "Challenge prompt"} · ${answerer ? "Your answer" : `${escapeHtml(playerName(state.players, challenge.player_id))} is answering`}</span><span><b data-deadline="${deadline}">--</b>s</span></div><h3>${answerer ? "Show us what you’ve got." : "Challenge time."}</h3><p class="challenge-prompt">${escapeHtml(challenge.prompt)}</p>${answerer ? `<div class="answer-line"><input class="input" id="challenge-answer" maxlength="240" placeholder="Type a quick answer…" autocomplete="off"><button class="btn btn-primary" data-action="submit-answer">Send answer</button></div><button class="btn btn-light compact mic-button" type="button" data-action="mic">🎙 &nbsp;Answer by voice</button><p class="mic-note">Microphone access is requested only when you tap voice. Your browser’s speech service handles voice; UNO Multiplayer Game receives the transcript. Typing always works.</p>` : `<div class="wait-row">The group will vote after the answer.</div>`}</section>`;
   }
   return `<section class="challenge-card"><div class="challenge-meta"><span>Group vote · ${challenge.eligible_voter ? "Your vote counts" : "Waiting for votes"}</span><span><b data-deadline="${deadline}">--</b>s</span></div><h3>Does that answer fit?</h3><p class="challenge-prompt">${escapeHtml(challenge.prompt)}</p><div class="answer-quote">${escapeHtml(challenge.answer || "No answer submitted.")}</div>${challenge.eligible_voter && !challenge.has_voted ? `<div class="vote-row"><button class="btn btn-green" data-action="vote" data-yes="true">Yes, it fits</button><button class="btn btn-light" data-action="vote" data-yes="false">Not quite</button></div>` : `<div class="wait-row">${challenge.has_voted ? "Your vote is in · " : ""}${challenge.votes_cast} / ${challenge.votes_needed} votes counted</div>`}</section>`;
 }
@@ -409,7 +409,7 @@ app.addEventListener("click", async (event) => {
   } else if (action === "share-room") {
     const invite = target.dataset.invite;
     try {
-      if (navigator.share) await navigator.share({ title: "Join my Color Club game", text: `Join my room with code ${state.code}.`, url: invite });
+      if (navigator.share) await navigator.share({ title: "Join my UNO Multiplayer Game", text: `Join my room with code ${state.code}.`, url: invite });
       else { await navigator.clipboard.writeText(invite); showToast("Invite link copied."); }
     } catch { /* A canceled share sheet is not an error. */ }
   } else if (action === "start") {

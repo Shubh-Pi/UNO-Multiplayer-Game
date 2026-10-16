@@ -1,1 +1,1 @@
-"""Color Club multiplayer demo application."""
+"""UNO Multiplayer Game demo application."""
