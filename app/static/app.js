@@ -112,18 +112,24 @@ function render() {
   updateConnection();
   app.setAttribute("aria-busy", "false");
   if (!state) {
+    document.body.dataset.view = "home";
     app.innerHTML = renderHome();
   } else if (state.status === "queue") {
+    document.body.dataset.view = "queue";
     app.innerHTML = renderQueue();
   } else if (state.status === "lobby") {
+    document.body.dataset.view = "lobby";
     app.innerHTML = renderLobby();
   } else if (["playing", "round_over"].includes(state.status)) {
+    document.body.dataset.view = "game";
     app.innerHTML = renderGame();
   } else if (state.status === "complete") {
+    document.body.dataset.view = "results";
     app.innerHTML = renderResults();
   } else {
     state = null;
     sessionStorage.removeItem("cc_room");
+    document.body.dataset.view = "home";
     app.innerHTML = renderHome();
   }
   updateTimers();
