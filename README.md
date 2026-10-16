@@ -1,4 +1,4 @@
-# Color Club
+# UNO Multiplayer Game
 
 A mobile-first, real-time multiplayer party card game for 2–8 people. This is a portfolio/demo project, not a revenue product. There are no accounts, purchases, or database-backed profiles.
 
@@ -72,7 +72,7 @@ AI_MODEL=your-model-name
 
 The endpoint and key are optional; the game keeps working without them. AI prompts are generated asynchronously in the background and cached, so they do not delay moves. Provider use may have a separate cost or quota; check its terms before enabling it. The app does not include a vector database or RAG because no approved retrieval corpus was selected.
 
-Voice entry is an optional browser enhancement. The microphone is requested only after a player taps **Answer by voice**. Speech is handled by the browser's speech service; Color Club receives only the transcript. Typed answers work on every supported browser.
+Voice entry is an optional browser enhancement. The microphone is requested only after a player taps **Answer by voice**. Speech is handled by the browser's speech service; UNO Multiplayer Game receives only the transcript. Typed answers work on every supported browser.
 
 ## Security and demo limits
 

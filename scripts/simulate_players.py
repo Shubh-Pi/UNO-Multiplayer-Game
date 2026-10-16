@@ -1,4 +1,4 @@
-"""Open 2-8 independent guest sessions against a local Color Club service."""
+"""Open 2-8 independent guest sessions against a local UNO Multiplayer Game service."""
 
 from __future__ import annotations
 

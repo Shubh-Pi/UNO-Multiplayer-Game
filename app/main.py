@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     await ai.close()
 
 
-app = FastAPI(title="Color Club", docs_url=None, redoc_url=None, lifespan=lifespan)
+app = FastAPI(title="UNO Multiplayer Game", docs_url=None, redoc_url=None, lifespan=lifespan)
 app.add_middleware(
     SessionMiddleware,
     secret_key=SESSION_SECRET,
