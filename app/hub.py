@@ -191,15 +191,13 @@ class Hub:
             await self._error(websocket, "Enter a display name up to 20 characters long.")
             return
         current = self._current_room(guest_id)
-        if current:
-            player = current.player(guest_id)
-            if player:
-                await self._replace_connection(websocket, guest_id)
-                player.name = name
-                player.connected = True
-                player.disconnected_at = None
-                await self._broadcast(current)
-                return
+        current_player = current.player(guest_id) if current else None
+        if current_player and (
+            (action == "join" and _valid_code(data.get("code")) == current.code)
+            or (action == "matchmaking" and current.status == "queue" and current.mode == data.get("play_mode", "free"))
+        ):
+            await self._restore_player(current, current_player, guest_id, name, websocket)
+            return
 
         if action == "create":
             if len(self.rooms) >= 200:
@@ -209,6 +207,7 @@ class Hub:
             if mode not in VALID_MODES:
                 await self._error(websocket, "Choose Free-for-all or Teams.")
                 return
+            await self._leave_for_new_entry(current, guest_id, websocket)
             code = self._new_code()
             player = Player(guest_id, name)
             room = Room(code, guest_id, [player], mode=mode, activity_at=time.time())
@@ -228,8 +227,13 @@ class Hub:
             if len(room.players) >= MAX_PLAYERS:
                 await self._error(websocket, "That room is full (8 players maximum).")
                 return
-            if self._name_taken(room, name):
+            existing_player = room.player(guest_id)
+            if self._name_taken(room, name) and not existing_player:
                 await self._error(websocket, "That display name is already being used in this room.")
+                return
+            await self._leave_for_new_entry(current if current is not room else None, guest_id, websocket)
+            if existing_player:
+                await self._restore_player(room, existing_player, guest_id, name, websocket)
                 return
             room.players.append(Player(guest_id, name))
             if room.host_id is None:
@@ -243,8 +247,13 @@ class Hub:
             if len(room.players) >= MAX_PLAYERS:
                 await self._error(websocket, "That match is full. Please try again.")
                 return
-            if self._name_taken(room, name):
+            existing_player = room.player(guest_id)
+            if self._name_taken(room, name) and not existing_player:
                 await self._error(websocket, "That display name is already being used in this match.")
+                return
+            await self._leave_for_new_entry(current if current is not room else None, guest_id, websocket)
+            if existing_player:
+                await self._restore_player(room, existing_player, guest_id, name, websocket)
                 return
             room.players.append(Player(guest_id, name))
             self.player_rooms[guest_id] = room.code
@@ -265,6 +274,21 @@ class Hub:
         if room.online and len(room.players) == 1:
             self._task(room, self._queue_timeout(room.code, room.mode))
         await self._broadcast(room)
+
+    async def _restore_player(
+        self, room: Room, player: Player, guest_id: str, name: str, websocket: WebSocket
+    ) -> None:
+        await self._replace_connection(websocket, guest_id)
+        player.name = name
+        player.connected = True
+        player.disconnected_at = None
+        await self._broadcast(room)
+
+    async def _leave_for_new_entry(self, room: Room | None, guest_id: str, websocket: WebSocket) -> None:
+        """Detach a guest from their old room after an explicit new create/join request."""
+        if room and room.player(guest_id):
+            await self._replace_connection(websocket, guest_id)
+            await self._leave(room, guest_id, websocket)
 
     def _queue_room(self, mode: str) -> Room:
         code = self.queues.get(mode)
